@@ -36,7 +36,7 @@ class Complex:
             if r == self.img:
                 theta = math.pi / 2
             else:
-                theta = 170 * math.pi / 180
+                theta = 270 * math.pi / 180
         elif r == abs(self.real):
             if r == self.real:
                 theta = 0
@@ -202,4 +202,3 @@ class Complex:
 
 a = Complex(8, 0)
 b = Complex(8, 0)
-x = complex(0, 1)
