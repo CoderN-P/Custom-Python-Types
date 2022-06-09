@@ -3,7 +3,6 @@ from typing import List
 import math
 
 
-
 class Complex:
     def __init__(self, real: float = 0, img: float = 0) -> None:
         self.real = real
@@ -15,8 +14,11 @@ class Complex:
 
     @real.setter
     def real(self, value) -> None:
-        if value < 1e-10:
-            value = 0
+        if abs(value - int(value)) < 1e-5:
+            if value <= 0:
+                value = math.ceil(value)
+            else:
+                value = math.floor(value)
         self._real = value
 
     @property
@@ -25,8 +27,11 @@ class Complex:
 
     @img.setter
     def img(self, value) -> None:
-        if value < 1e-10:
-            value = 0
+        if abs(value - int(value)) < 1e-5:
+            if value <= 0:
+                value = math.ceil(value)
+            else:
+                value = math.floor(value)
         self._img = value
 
     @property
@@ -57,7 +62,8 @@ class Complex:
             return f'{self.img}i'
         if self.img == 0:
             return f'{self.real}'
-
+        if self.real == 0:
+            return f'{self.img}i'
         return f'{self.real} - {abs(self.img)}i'
 
     def __add__(self, other) -> Complex:
@@ -93,6 +99,11 @@ class Complex:
     def __eq__(self, other) -> bool:
         if isinstance(other, Complex):
             return self.real == other.real and self.img == other.img
+        return False
+
+    def __ne__(self, other) -> bool:
+        if isinstance(other, Complex):
+            return self.real != other.real or self.img != other.img
         return False
 
     def __sub__(self, other) -> Complex:
@@ -193,12 +204,14 @@ class Complex:
         imaginary = Complex(real=math.cos(e), img=math.sin(e))  # Euler's formula
         return imaginary * real_part
 
+    def __abs__(self):
+        return self.polar[0]
+
     def conjugate(self) -> Complex:
         return Complex(real=self.real, img=-self.img)
 
     __radd__ = __add__
-    __abs__ = __pos__
+    __rmul__ = __mul__
 
 
-a = Complex(8, 0)
-b = Complex(8, 0)
+
