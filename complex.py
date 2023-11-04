@@ -34,37 +34,44 @@ class Complex:
                 value = math.floor(value)
         self._img = value
 
+        
     @property
     def polar(self) -> List[int | float]:
-        r = (self.real ** 2 + self.img ** 2) ** 0.5
-        if r == abs(self.img):
-            if r == self.img:
+        radius = (self.real ** 2 + self.img ** 2) ** 0.5
+        if radius == abs(self.img):  # Means that the real part is 0
+            if radius == self.img:
                 theta = math.pi / 2
             else:
                 theta = 270 * math.pi / 180
-        elif r == abs(self.real):
-            if r == self.real:
+        elif radius == abs(self.real):
+            if radius == self.real:
                 theta = 0
             else:
                 theta = math.pi
         else:
             theta = math.atan(self.img / self.real)
 
-        return [r, theta]
+        print(radius, theta)
+
+        return [radius, theta]
 
     def __repr__(self) -> str:
-        return f'Complex(real={self.real}, img={self.img}, polar={self.polar})'
+        return f"Complex(real={self.real}, img={self.img}, polar={self.polar})"
 
     def __str__(self) -> str:
         if self.img > 0:
             if self.real != 0:
-                return f'{self.real} + {self.img}i'
-            return f'{self.img}i'
+                return f"{self.real} + {self.img}i"
+            if self.img == 1:
+                return "i"
+            return f"{self.img}i"
         if self.img == 0:
-            return f'{self.real}'
+            return f"{self.real}"
         if self.real == 0:
-            return f'{self.img}i'
-        return f'{self.real} - {abs(self.img)}i'
+            if self.img == -1:
+                return "-i"
+            return f"{self.img}i"
+        return f"{self.real} - {abs(self.img)}i"
 
     def __add__(self, other) -> Complex:
         if isinstance(other, Complex):
@@ -72,7 +79,9 @@ class Complex:
         elif isinstance(other, (int, float)):
             return Complex(real=self.real + other, img=self.img)
         else:
-            raise TypeError('Addition with complex numbers only supported by int, float, or Complex')
+            raise TypeError(
+                "Addition with complex numbers only supported by int, float, or Complex"
+            )
 
     def __iadd__(self, other) -> Complex:
         if isinstance(other, Complex):
@@ -83,7 +92,9 @@ class Complex:
             self.real += other
 
         else:
-            raise TypeError('Addition with complex numbers only supported by int, float, or Complex')
+            raise TypeError(
+                "Addition with complex numbers only supported by int, float, or Complex"
+            )
 
         return self
 
@@ -112,7 +123,9 @@ class Complex:
         elif isinstance(other, (int, float)):
             return Complex(real=self.real - other, img=self.img)
         else:
-            raise TypeError('Subtraction with complex numbers only supported with int, float, or Complex')
+            raise TypeError(
+                "Subtraction with complex numbers only supported with int, float, or Complex"
+            )
 
     def __isub__(self, other) -> Complex:
         if isinstance(other, Complex):
@@ -123,7 +136,9 @@ class Complex:
             self.real -= other
 
         else:
-            raise TypeError('Subtraction with complex numbers only supported with int, float, or Complex')
+            raise TypeError(
+                "Subtraction with complex numbers only supported with int, float, or Complex"
+            )
 
         return self
 
@@ -137,13 +152,16 @@ class Complex:
             return Complex(real=other * self.real, img=other * self.img)
 
         else:
-            raise TypeError('Multiplication with complex numbers only supported by int, float, or Complex')
+            raise TypeError(
+                "Multiplication with complex numbers only supported by int, float, or Complex"
+            )
 
     def __truediv__(self, other) -> Complex:
+        
         if isinstance(other, Complex):
             conjugate = other.conjugate()
             divisor = (other * conjugate).real
-            numerator = (self * conjugate)
+            numerator = self * conjugate
             numerator.real /= divisor
             numerator.img /= divisor
             return numerator
@@ -152,19 +170,25 @@ class Complex:
             return Complex(real=self.real / other, img=self.img / other)
 
         else:
-            raise TypeError('Division with complex numbers only supported with int, float, or complex')
+            raise TypeError(
+                "Division with complex numbers only supported with int, float, or complex"
+            )
 
     def __rtruediv__(self, other):
         conjugate = self.conjugate()
         if isinstance(other, (Complex, int, float)):
             divisor = (self * conjugate).real
-            numerator = (other * conjugate)
+
+            numerator = other * conjugate
             numerator.real /= divisor
             numerator.img /= divisor
+
             return numerator
 
         else:
-            raise TypeError('Division with complex numbers only supported with int, float, or complex')
+            raise TypeError(
+                "Division with complex numbers only supported with int, float, or complex"
+            )
 
     def __rfloordiv__(self, other) -> Complex:
         result = other / self
@@ -179,13 +203,15 @@ class Complex:
         return result
 
     def __pow__(self, power) -> Complex:
-        if isinstance(power, Complex) and self.img != 0:
+        if isinstance(power, Complex):
             if power.img != 0:
-                polar_form = power.polar
+                polar_form = self.polar
                 complex_log = Complex(real=math.log(polar_form[0]), img=polar_form[1])
-                exponent = self * complex_log
+                exponent = power * complex_log
                 real_part = math.exp(exponent.real)
-                imaginary = Complex(real=math.cos(exponent.img), img=math.sin(exponent.img))
+                imaginary = Complex(
+                    real=math.cos(exponent.img), img=math.sin(exponent.img)
+                )
                 return imaginary * real_part
             else:
                 power = power.real
@@ -193,7 +219,9 @@ class Complex:
             polar = self.polar
             polar[0] **= power
             polar[1] *= power
-            return Complex(real=polar[0] * math.cos(polar[1]), img=polar[0] * math.sin(polar[1]))
+            return Complex(
+                real=polar[0] * math.cos(polar[1]), img=polar[0] * math.sin(polar[1])
+            )
 
         if self.img == 0:
             return self.real ** power
@@ -212,6 +240,3 @@ class Complex:
 
     __radd__ = __add__
     __rmul__ = __mul__
-
-
-
